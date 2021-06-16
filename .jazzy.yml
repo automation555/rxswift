@@ -16,6 +16,7 @@ custom_categories:
   - KVORepresentable+CoreGraphics
   - KVORepresentable+Swift
   - KVORepresentable
+  - Logging
   - NSObject+Rx+KVORepresentable
   - NSObject+Rx+RawRepresentable
   - NSObject+Rx
@@ -64,6 +65,7 @@ custom_categories:
 - name: RxCocoa/iOS
   children:
   - NSTextStorage+Rx
+  - UIAccessibilityCustomAction+Rx
   - UIActivityIndicatorView+Rx
   - UIApplication+Rx
   - UIBarButtonItem+Rx
@@ -242,7 +244,6 @@ custom_categories:
   - Using
   - Window
   - WithLatestFrom
-  - WithUnretained
   - Zip+Collection
   - Zip+arity
   - Zip
