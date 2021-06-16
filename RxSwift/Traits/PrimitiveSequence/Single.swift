@@ -84,42 +84,6 @@ extension PrimitiveSequenceType where Trait == SingleTrait {
     /**
      Subscribes a success handler, and an error handler for this sequence.
      
-     Also, take in an object and provide an unretained, safe to use (i.e. not implicitly unwrapped), reference to it along with the events emitted by the sequence.
-     
-     - Note: If `object` can't be retained, none of the other closures will be invoked.
-     
-     - parameter object: The object to provide an unretained reference on.
-     - parameter onSuccess: Action to invoke for each element in the observable sequence.
-     - parameter onFailure: Action to invoke upon errored termination of the observable sequence.
-     - parameter onDisposed: Action to invoke upon any type of termination of sequence (if the sequence has
-     gracefully completed, errored, or if the generation is canceled by disposing subscription).
-     - returns: Subscription object used to unsubscribe from the observable sequence.
-     */
-    public func subscribe<Object: AnyObject>(
-        with object: Object,
-        onSuccess: ((Object, Element) -> Void)? = nil,
-        onFailure: ((Object, Swift.Error) -> Void)? = nil,
-        onDisposed: ((Object) -> Void)? = nil
-    ) -> Disposable {
-        subscribe(
-            onSuccess: { [weak object] in
-                guard let object = object else { return }
-                onSuccess?(object, $0)
-            },
-            onFailure: { [weak object] in
-                guard let object = object else { return }
-                onFailure?(object, $0)
-            },
-            onDisposed: { [weak object] in
-                guard let object = object else { return }
-                onDisposed?(object)
-            }
-        )
-    }
-    
-    /**
-     Subscribes a success handler, and an error handler for this sequence.
-     
      - parameter onSuccess: Action to invoke for each element in the observable sequence.
      - parameter onFailure: Action to invoke upon errored termination of the observable sequence.
      - parameter onDisposed: Action to invoke upon any type of termination of sequence (if the sequence has
@@ -385,6 +349,24 @@ extension PrimitiveSequenceType where Trait == SingleTrait {
         -> PrimitiveSequence<Trait, Element> {
         catchAndReturn(element)
     }
+    
+    /**
+      Convert Single into an Single of its events.
+      - seealso: [materialize operator on reactivex.io](http://reactivex.io/documentation/operators/materialize-dematerialize.html)
+      - returns: Single that wraps an original event in Result<Element, Error>. The returned Single never errors, but it does complete after observing the event of the underlying Single.
+      */
+     public func materialize() -> Single<Result<Element, Error>> {
+        Single<Result<Element, Error>>.create { observer in
+            self.primitiveSequence.subscribe { event in
+                switch event {
+                case let .success(element):
+                    observer(.success(.success(element)))
+                case let .failure(error):
+                    observer(.success(.failure(error)))
+                }
+            }
+        }
+     }
 
     /// Converts `self` to `Maybe` trait.
     ///
@@ -399,5 +381,32 @@ extension PrimitiveSequenceType where Trait == SingleTrait {
     /// - returns: Completable trait that represents `self`.
     public func asCompletable() -> Completable {
         self.primitiveSequence.source.ignoreElements().asCompletable()
+    }
+}
+
+extension PrimitiveSequence where Trait == SingleTrait, Element: EventConvertible {
+    /**
+     Convert any previously materialized Single into it's original form.
+     - seealso: [materialize operator on reactivex.io](http://reactivex.io/documentation/operators/materialize-dematerialize.html)
+     - returns: The dematerialized observable sequence.
+     */
+    public func dematerialize() -> Single<Element.Element> {
+        return Single<Element.Element>.create { observer in
+            return self.primitiveSequence.subscribe { event in
+                switch event {
+                case let .success(event):
+                    switch event.event {
+                    case .completed:
+                        break
+                    case let .next(element):
+                        observer(.success(element))
+                    case let .error(error):
+                        observer(.failure(error))
+                    }
+                case let .failure(error):
+                    observer(.failure(error))
+                }
+            }
+        }
     }
 }
