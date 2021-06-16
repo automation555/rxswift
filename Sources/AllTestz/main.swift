@@ -274,9 +274,6 @@ final class DriverTest_ : DriverTest, RxTestCase {
     ("testDriveOptionalReplayRelay2", DriverTest.testDriveOptionalReplayRelay2),
     ("testDriveReplayRelays2", DriverTest.testDriveReplayRelays2),
     ("testDriveReplayRelayNoAmbiguity", DriverTest.testDriveReplayRelayNoAmbiguity),
-    ("testDriveWithNext", DriverTest.testDriveWithNext),
-    ("testDriveWithError", DriverTest.testDriveWithError),
-    ("testDriveWithCompleted", DriverTest.testDriveWithCompleted),
     ] }
 }
 
@@ -311,25 +308,6 @@ final class HistoricalSchedulerTest_ : HistoricalSchedulerTest, RxTestCase {
     ("testHistoricalScheduler_disposeAdvanceTo", HistoricalSchedulerTest.testHistoricalScheduler_disposeAdvanceTo),
     ("testHistoricalScheduler_stop", HistoricalSchedulerTest.testHistoricalScheduler_stop),
     ("testHistoricalScheduler_sleep", HistoricalSchedulerTest.testHistoricalScheduler_sleep),
-    ] }
-}
-
-final class InfallibleTest_ : InfallibleTest, RxTestCase {
-    #if os(macOS)
-    required override init() {
-        super.init()
-    }
-    #endif
-
-    static var allTests: [(String, (InfallibleTest_) -> () -> Void)] { return [
-    ("testAsInfallible_OnErrorJustReturn", InfallibleTest.testAsInfallible_OnErrorJustReturn),
-    ("testAsInfallible_OnErrorFallbackTo", InfallibleTest.testAsInfallible_OnErrorFallbackTo),
-    ("testAsInfallible_OnErrorRecover", InfallibleTest.testAsInfallible_OnErrorRecover),
-    ("testAnonymousInfallible_detachesOnDispose", InfallibleTest.testAnonymousInfallible_detachesOnDispose),
-    ("testAnonymousInfallible_detachesOnComplete", InfallibleTest.testAnonymousInfallible_detachesOnComplete),
-    ("testAsInfallible_never", InfallibleTest.testAsInfallible_never),
-    ("testSubscribeWithNext", InfallibleTest.testSubscribeWithNext),
-    ("testSubscribeWithError", InfallibleTest.testSubscribeWithError),
     ] }
 }
 
@@ -513,6 +491,8 @@ final class ObservableBufferTest_ : ObservableBufferTest, RxTestCase {
     ("testBufferWithTimeOrCount_Error", ObservableBufferTest.testBufferWithTimeOrCount_Error),
     ("testBufferWithTimeOrCount_Disposed", ObservableBufferTest.testBufferWithTimeOrCount_Disposed),
     ("testBufferWithTimeOrCount_Default", ObservableBufferTest.testBufferWithTimeOrCount_Default),
+    ("testBufferWithTrigger_Default", ObservableBufferTest.testBufferWithTrigger_Default),
+    ("testBufferWithDebounce_Default", ObservableBufferTest.testBufferWithDebounce_Default),
     ] }
 }
 
@@ -1634,7 +1614,6 @@ final class ObservableTest_ : ObservableTest, RxTestCase {
     ("testAsObservable_asObservable", ObservableTest.testAsObservable_asObservable),
     ("testAsObservable_hides", ObservableTest.testAsObservable_hides),
     ("testAsObservable_never", ObservableTest.testAsObservable_never),
-    ("testSubscribeWithNext", ObservableTest.testSubscribeWithNext),
     ] }
 }
 
@@ -1897,9 +1876,6 @@ final class ReactiveTests_ : ReactiveTests, RxTestCase {
 
     static var allTests: [(String, (ReactiveTests_) -> () -> Void)] { return [
     ("testEnablesMutations", ReactiveTests.testEnablesMutations),
-    ("testReactiveStruct", ReactiveTests.testReactiveStruct),
-    ("testReactiveProtocol", ReactiveTests.testReactiveProtocol),
-    ("testDynamicLookup", ReactiveTests.testDynamicLookup),
     ] }
 }
 
@@ -2061,9 +2037,6 @@ final class SignalTests_ : SignalTests, RxTestCase {
     ("testEmitOptionalReplayRelay2", SignalTests.testEmitOptionalReplayRelay2),
     ("testEmitReplayRelays2", SignalTests.testEmitReplayRelays2),
     ("testEmitReplayRelayNoAmbiguity", SignalTests.testEmitReplayRelayNoAmbiguity),
-    ("testEmitWithNext", SignalTests.testEmitWithNext),
-    ("testEmitWithError", SignalTests.testEmitWithError),
-    ("testEmitWithCompleted", SignalTests.testEmitWithCompleted),
     ] }
 }
 
@@ -2158,21 +2131,6 @@ final class VirtualSchedulerTest_ : VirtualSchedulerTest, RxTestCase {
     ("testVirtualScheduler_stress", VirtualSchedulerTest.testVirtualScheduler_stress),
     ] }
 }
-
-final class WithUnretainedTests_ : WithUnretainedTests, RxTestCase {
-    #if os(macOS)
-    required override init() {
-        super.init()
-    }
-    #endif
-
-    static var allTests: [(String, (WithUnretainedTests_) -> () -> Void)] { return [
-    ("testObjectAttached", WithUnretainedTests.testObjectAttached),
-    ("testObjectDeallocates", WithUnretainedTests.testObjectDeallocates),
-    ("testObjectDeallocatesSequenceCompletes", WithUnretainedTests.testObjectDeallocatesSequenceCompletes),
-    ("testResultsSelector", WithUnretainedTests.testResultsSelector),
-    ] }
-}
 #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
 
 func testCase<T: RxTestCase>(_ tests: [(String, (T) -> () -> Void)]) -> () -> Void {
@@ -2213,7 +2171,6 @@ func XCTMain(_ tests: [() -> Void]) {
         testCase(DriverTest_.allTests),
         testCase(EventTests_.allTests),
         testCase(HistoricalSchedulerTest_.allTests),
-        testCase(InfallibleTest_.allTests),
         testCase(MainSchedulerTest_.allTests),
         testCase(MaybeTest_.allTests),
         testCase(NSNotificationCenterTests_.allTests),
@@ -2289,6 +2246,5 @@ func XCTMain(_ tests: [() -> Void]) {
         testCase(SignalTests_.allTests),
         testCase(SingleTest_.allTests),
         testCase(VirtualSchedulerTest_.allTests),
-        testCase(WithUnretainedTests_.allTests),
     ])
 //}
